@@ -138,7 +138,7 @@ export default function RegisterPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
                     <label className="font-heading font-bold text-[15px] leading-[19px] text-black">
                       Kata Sandi <span className="text-red-500">*</span>
