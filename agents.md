@@ -1,109 +1,100 @@
-# TicketTama — Agent Instructions
+# AGENTS.md - Panduan AI Assistant untuk TicketTama
 
-## Project Overview
+## Gambaran Proyek
 
-**TicketTama** adalah platform jual-beli tiket event digital berbasis web. Dibangun dengan Next.js 16 (App Router), React 19, TypeScript, dan Tailwind CSS v4.
+**TicketTama** adalah platform jual tiket event digital berbahasa Indonesia. Pengguna dapat menemukan dan membeli tiket untuk konser, workshop, olahraga, seni & teater, dan event lainnya. Fitur utama mencakup pencarian event, filter kategori, pemesanan tiket instan, dan tiket digital berbasis QR.
 
-### Tech Stack
+## Tech Stack
 
-| Bagian        | Teknologi                                          |
-| ------------- | --------------------------------------------------- |
-| Framework     | Next.js 16 (App Router)                             |
-| Bahasa        | TypeScript (strict)                                 |
-| UI            | React 19, Tailwind CSS v4                           |
-| Font          | Plus Jakarta Sans (heading), Inter (body)           |
-| Linter        | ESLint with `eslint-config-next`                    |
-| Package Mgr   | npm                                                 |
+- **Framework:** Next.js 16 (App Router)
+- **React:** 19
+- **Bahasa:** TypeScript 5
+- **Styling:** Tailwind CSS 4 (via `@tailwindcss/postcss`)
+- **Package Manager:** npm
+- **Linting:** ESLint 9 + `eslint-config-next`
 
-### Struktur Folder
+## Perintah Penting
+
+| Perintah | Deskripsi |
+|---|---|
+| `npm run dev` | Menjalankan dev server di `http://localhost:3000` |
+| `npm run build` | Build untuk production |
+| `npm run start` | Menjalankan server production |
+| `npm run lint` | Menjalankan ESLint |
+
+**Catatan:** Belum ada script test. Jika perlu menambahkan test, diskusikan dengan user terlebih dahulu.
+
+## Struktur Direktori
 
 ```
 src/
-├── app/
-│   ├── globals.css          # Tailwind v4 theme variables
-│   ├── layout.tsx           # Root layout (fonts, metadata)
-│   ├── page.tsx             # Homepage
-│   ├── login/page.tsx       # Login page (empty — placeholder)
-│   └── register/page.tsx    # Register page (with form validation)
-└── components/
-    ├── Navbar.tsx           # Navigation bar (responsive, mobile menu)
-    ├── HeroSection.tsx      # Hero with CTA and event highlight
-    ├── SearchSection.tsx    # Search bar + category filter pills
-    ├── EventCards.tsx       # Grid of event cards (with mock data)
-    ├── HowItWorks.tsx       # 3-step instructions
-    ├── Subscription.tsx     # Newsletter email subscription
-    └── Footer.tsx           # Footer with links and social icons
+  app/
+    layout.tsx          # Root layout, font (Plus Jakarta Sans + Inter), metadata
+    page.tsx            # Halaman utama (landing page)
+    globals.css         # Global CSS + Tailwind theme tokens
+    login/page.tsx      # Halaman login
+    register/page.tsx   # Halaman registrasi
+  components/
+    Navbar.tsx          # Navigasi (sticky, responsive, mobile hamburger)
+    HeroSection.tsx     # Hero banner dengan CTA
+    SearchSection.tsx   # Search bar + filter kategori
+    EventCards.tsx      # Grid kartu event populer
+    HowItWorks.tsx      # Section 3 langkah cara kerja
+    Subscription.tsx    # Form berlangganan newsletter
+    Footer.tsx          # Footer dengan link navigasi & sosial media
+public/
+  images/               # Gambar statis (event, hero, dll)
+  design/               # File desain
 ```
 
-### Routing
+## Konvensi Kode
 
-| Path       | Halaman        |
-| ---------- | -------------- |
-| `/`        | Homepage       |
-| `/login`   | Login (empty)  |
-| `/register`| Register       |
+### Path Alias
+Gunakan `@/` yang mengarah ke `./src/`. Contoh: `import Navbar from "@/components/Navbar"`.
 
-### Theme (Tailwind CSS v4 via `@theme inline`)
+### Komponen
+- Semua komponen berada di `src/components/`.
+- Komponen yang menggunakan state (`useState`, `useEffect`, dll) wajib menggunakan directive `"use client"`.
+- Komponen yang hanya render JSX statis tidak perlu `"use client"` (server component).
+- Penamaan komponen: **PascalCase**, default export.
 
-```
-primary:      #2663EB
-primary-dark: #1155E2
-accent:       #F59E0C
-dark:         #2C2C2C
-body:         #1E1E1E
-muted:        #757575
-border:       #B2B2B2
-surface:      #F8F9FA
-icon:         #B3B3B3
-```
+### Styling
+- Gunakan **Tailwind utility classes** secara langsung di JSX.
+- Gunakan **design tokens** yang sudah didefinisikan di `globals.css` via `@theme inline`:
+  - Warna: `primary` (#2663EB), `primary-dark` (#1155E2), `accent` (#F59E0C), `dark` (#2C2C2C), `body` (#1E1E1E), `muted` (#757575), `border` (#B2B2B2), `surface` (#F8F9FA), `icon` (#B3B3B3)
+  - Font: `font-heading` (Plus Jakarta Sans), `font-body` (Inter)
+- Contoh penggunaan: `bg-primary`, `text-muted`, `font-heading`, `border-border`.
+- **Jangan** menambahkan warna atau font baru tanpa mengikuti sistem token yang sudah ada.
 
-### Scripts (package.json)
+### Tipografi
+- Heading menggunakan `font-heading` (Plus Jakarta Sans).
+- Body text menggunakan `font-body` (Inter).
+- Ukuran font dan line-height ditulis eksplisit, contoh: `font-heading font-bold text-[28px] leading-[35px]`.
 
-| Perintah       | Fungsi                        |
-| -------------- | ----------------------------- |
-| `npm run dev`  | Jalankan dev server (Next.js) |
-| `npm run build`| Build production              |
-| `npm run start`| Start production server       |
-| `npm run lint` | ESLint check                  |
+### Layout
+- Max-width container: `max-w-[1100px]` atau `max-w-[1280px]`.
+- Horizontal padding konsisten: `px-[90px]`.
+- Gunakan `mx-auto` untuk centering.
 
-## Aturan Pengembangan
+### Bahasa UI
+- Semua teks UI menggunakan **Bahasa Indonesia**.
 
-1. **Gunakan "use client" hanya jika perlu** — komponen interaktif (state, event handler, hooks) membutuhkannya; komponen statis cukup server component.
-2. **Path alias** — gunakan `@/` yang sudah di-mapping ke `src/` (via `tsconfig.json` paths).
-3. **Gambar** — simpan di `public/images/`. Untuk external images (Unsplash), daftarkan domain di `next.config.ts`.
-4. **Jangan tambahkan komentar** kecuali diminta secara eksplisit.
-5. **Tailwind utility classes** lebih diutamakan daripada CSS kustom.
-6. **Shadow pattern yang dipakai**: `shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)]`.
-7. **Border radius**: umumnya `rounded-lg` (8px) atau `rounded-xl` (12px).
-8. **Container max-width**: `max-w-[1100px]` (konten) atau `max-w-[1280px]` (full layout). Padding horizontal: `px-[90px]`.
-9. **Bahasa**: Indonesia (id). Semua teks UI dalam Bahasa Indonesia.
+## Status Proyek
 
-## Pola Komponen
+- **Frontend only** - belum terhubung ke backend/API.
+- Form login dan register sudah ada validasi client-side, tapi submit belum terhubung ke API.
+- Data event masih **hardcoded** di `EventCards.tsx`.
+- Gambar event di `EventCards.tsx` belum diimplementasikan (masih placeholder `bg-[#D9D9D9]`).
+- Tombol Google login/register sudah ada tapi disabled (belum diimplementasikan).
+- Halaman yang sudah ada: `/` (landing), `/login`, `/register`.
+- Halaman yang direferensikan tapi belum dibuat: `/event`, `/bantuan`, `/pusat-bantuan`.
 
-```tsx
-// Server component (default)
-export default function SomeSection() {
-  return (
-    <section className="...">
-      <div className="max-w-[1100px] mx-auto px-[90px]">...</div>
-    </section>
-  );
-}
-```
+## Konvensi Git
 
-```tsx
-// Client component (interaktif)
-"use client";
-import { useState } from "react";
-export default function SomeInteractive() {
-  const [state, setState] = useState(initial);
-  // ...
-}
-```
+- Commit message dalam Bahasa Indonesia atau Inggris, singkat dan deskriptif.
 
-## Catatan
+## Catatan Tambahan
 
-- Login page (`/login`) masih kosong — belum diimplementasi.
-- Register page memiliki form validation client-side tetapi belum terhubung ke backend API.
-- Data event di `EventCards.tsx` masih hardcoded — perlu dihubungkan ke API/database nantinya.
-- Google OAuth button di register page dalam status `disabled` (belum terintegrasi).
+- Image dari Unsplash sudah dikonfigurasi di `next.config.ts` via `remotePatterns`.
+- Jangan menambahkan library baru tanpa memeriksa apakah sudah ada di `package.json`.
+- Prioritaskan penggunaan komponen dan utilitas yang sudah ada sebelum membuat yang baru.
