@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+
 import Navbar from "@/components/Navbar";
+import { useAuth } from "@/hooks/useAuth";
+import { ApiClientError } from "@/lib/api";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -14,6 +20,8 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -55,13 +63,38 @@ export default function RegisterPage() {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
     const newErrors = validate();
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      alert("Pendaftaran berhasil! (Fitur ini belum terhubung ke backend)");
+    if (Object.keys(newErrors).length > 0) return;
+
+    setIsSubmitting(true);
+    try {
+      await register(
+        formData.namaLengkap,
+        formData.email,
+        formData.password
+      );
+      router.push("/dashboard");
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        if (err.status === 400) {
+          setErrors({ email: "Email sudah terdaftar" });
+        } else {
+          setSubmitError(err.message);
+        }
+      } else {
+        const message =
+          err instanceof Error ? err.message : "Unknown error";
+        setSubmitError(
+          `Tidak dapat terhubung ke server. Pastikan backend berjalan di http://localhost:8080 (${message})`
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -91,6 +124,12 @@ export default function RegisterPage() {
                 </Link>
               </p>
 
+              {submitError && (
+                <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 font-body text-[14px] text-red-600">
+                  {submitError}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
                   <label className="font-heading font-bold text-[15px] leading-[19px] text-black">
@@ -102,7 +141,8 @@ export default function RegisterPage() {
                     value={formData.namaLengkap}
                     onChange={handleChange}
                     placeholder="Isi Nama Lengkap"
-                    className={`w-full h-[40px] px-4 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors ${
+                    disabled={isSubmitting}
+                    className={`w-full h-[40px] px-4 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors disabled:opacity-60 ${
                       errors.namaLengkap
                         ? "border-red-500"
                         : "border-[#D9D9D9] focus:border-primary"
@@ -125,7 +165,8 @@ export default function RegisterPage() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="contoh@email.com"
-                    className={`w-full h-[40px] px-4 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors ${
+                    disabled={isSubmitting}
+                    className={`w-full h-[40px] px-4 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors disabled:opacity-60 ${
                       errors.email
                         ? "border-red-500"
                         : "border-[#D9D9D9] focus:border-primary"
@@ -150,7 +191,8 @@ export default function RegisterPage() {
                         value={formData.password}
                         onChange={handleChange}
                         placeholder="Isi Kata Sandi"
-                        className={`w-full h-[40px] px-4 pr-12 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors ${
+                        disabled={isSubmitting}
+                        className={`w-full h-[40px] px-4 pr-12 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors disabled:opacity-60 ${
                           errors.password
                             ? "border-red-500"
                             : "border-[#D9D9D9] focus:border-primary"
@@ -159,7 +201,8 @@ export default function RegisterPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#1E1E1E]"
+                        disabled={isSubmitting}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#1E1E1E] disabled:opacity-60"
                         aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                       >
                         {showPassword ? (
@@ -235,7 +278,8 @@ export default function RegisterPage() {
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         placeholder="Konfirmasi"
-                        className={`w-full h-[40px] px-4 pr-12 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors ${
+                        disabled={isSubmitting}
+                        className={`w-full h-[40px] px-4 pr-12 bg-white border rounded-lg font-body font-normal text-[16px] leading-[100%] placeholder:text-icon outline-none transition-colors disabled:opacity-60 ${
                           errors.confirmPassword
                             ? "border-red-500"
                             : "border-[#D9D9D9] focus:border-primary"
@@ -244,7 +288,8 @@ export default function RegisterPage() {
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#1E1E1E]"
+                        disabled={isSubmitting}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#1E1E1E] disabled:opacity-60"
                         aria-label={showConfirmPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                       >
                         {showConfirmPassword ? (
@@ -311,9 +356,10 @@ export default function RegisterPage() {
 
                 <button
                   type="submit"
-                  className="w-full h-[40px] bg-primary border border-[#D1D1D6] rounded-lg font-body font-bold text-[16px] leading-[100%] text-[#F5F5F5] hover:bg-primary-dark transition-colors"
+                  disabled={isSubmitting}
+                  className="w-full h-[40px] bg-primary border border-[#D1D1D6] rounded-lg font-body font-bold text-[16px] leading-[100%] text-[#F5F5F5] hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Daftar Sekarang
+                  {isSubmitting ? "Memproses..." : "Daftar Sekarang"}
                 </button>
 
                 <div className="flex items-center gap-3 my-2">
