@@ -184,6 +184,5 @@ Gunakan `@/` yang mengarah ke `./src/` (relative terhadap `frontend/tsconfig.jso
 - Jangan menambahkan library baru tanpa memeriksa apakah sudah ada di `frontend/package.json` (frontend) atau `backend/go.mod` (backend).
 - Prioritaskan penggunaan komponen dan utilitas yang sudah ada sebelum membuat yang baru.
 - Repo ini monorepo: `frontend/` untuk Next.js, `backend/` untuk Go service. Jalankan masing-masing dari foldernya sendiri.
-- **Branch aktif saat ini**: `feat/auth-redirect-and-navbar-profile` (belum di-merge ke `main`). Branch lain yang sudah di-merge: `add-backend-service`, `refactor-frontend-adding-monorepo`.
 - **Mobile breakpoint**: `md` (768px). Default mobile = `< 768px`, desktop = `>= 768px`.
 - **Hydration-sensitive code**: kalau membuat client component yang baca storage (localStorage/sessionStorage/cookies) atau pakai `Date.now()`/random, **SELALU** render state yang sama di server dan client pada first render. Set initial state konservatif (loading/empty), baca storage di `useEffect`.
