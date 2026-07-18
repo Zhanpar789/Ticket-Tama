@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { useAuth } from "@/hooks/useAuth";
+
+function getInitial(name: string | undefined | null): string {
+  if (!name) return "?";
+  const trimmed = name.trim();
+  if (!trimmed) return "?";
+  return trimmed.charAt(0).toUpperCase();
+}
+
 export default function Navbar() {
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -45,18 +55,36 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="flex items-center justify-center px-[12px] h-[36px] bg-primary-dark border border-primary rounded-lg font-body font-normal text-[14px] leading-[140%] text-white hover:bg-primary transition-colors"
-          >
-            Masuk
-          </Link>
-          <Link
-            href="/register"
-            className="flex items-center justify-center px-[12px] h-[36px] bg-accent border border-accent rounded-lg font-body font-normal text-[14px] leading-[140%] text-[#F5F5F5] hover:opacity-90 transition-opacity"
-          >
-            Daftar
-          </Link>
+          {isLoading ? (
+            <div className="w-[120px] h-[36px]" aria-hidden="true" />
+          ) : isAuthenticated && user ? (
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 h-[36px] pl-1 pr-3 rounded-full hover:bg-border/20 transition-colors"
+            >
+              <div className="w-[32px] h-[32px] rounded-full bg-primary flex items-center justify-center font-heading font-bold text-[14px] leading-[100%] text-white">
+                {getInitial(user.nama_lengkap)}
+              </div>
+              <span className="font-heading font-bold text-[14px] leading-[18px] text-dark max-w-[140px] truncate">
+                {user.nama_lengkap}
+              </span>
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="flex items-center justify-center px-[12px] h-[36px] bg-primary-dark border border-primary rounded-lg font-body font-normal text-[14px] leading-[140%] text-white hover:bg-primary transition-colors"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                className="flex items-center justify-center px-[12px] h-[36px] bg-accent border border-accent rounded-lg font-body font-normal text-[14px] leading-[140%] text-[#F5F5F5] hover:opacity-90 transition-opacity"
+              >
+                Daftar
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -97,22 +125,37 @@ export default function Navbar() {
           >
             Bantuan
           </Link>
-          <div className="flex gap-3 pt-2">
+          {isAuthenticated && user ? (
             <Link
-              href="/login"
-              className="flex-1 text-center px-3 py-2 bg-primary-dark text-white rounded-lg text-[14px]"
+              href="/dashboard"
+              className="flex items-center gap-2 pt-2"
               onClick={() => setMobileOpen(false)}
             >
-              Masuk
+              <div className="w-[36px] h-[36px] rounded-full bg-primary flex items-center justify-center font-heading font-bold text-[14px] leading-[100%] text-white">
+                {getInitial(user.nama_lengkap)}
+              </div>
+              <span className="font-heading font-bold text-[14px] text-dark truncate">
+                {user.nama_lengkap}
+              </span>
             </Link>
-            <Link
-              href="/register"
-              className="flex-1 text-center px-3 py-2 bg-accent text-[#F5F5F5] rounded-lg text-[14px]"
-              onClick={() => setMobileOpen(false)}
-            >
-              Daftar
-            </Link>
-          </div>
+          ) : (
+            <div className="flex gap-3 pt-2">
+              <Link
+                href="/login"
+                className="flex-1 text-center px-3 py-2 bg-primary-dark text-white rounded-lg text-[14px]"
+                onClick={() => setMobileOpen(false)}
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                className="flex-1 text-center px-3 py-2 bg-accent text-[#F5F5F5] rounded-lg text-[14px]"
+                onClick={() => setMobileOpen(false)}
+              >
+                Daftar
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>

@@ -78,7 +78,7 @@ export default function RegisterPage() {
         formData.email,
         formData.password
       );
-      router.push("/dashboard");
+      router.push("/");
     } catch (err) {
       if (err instanceof ApiClientError) {
         if (err.status === 400) {

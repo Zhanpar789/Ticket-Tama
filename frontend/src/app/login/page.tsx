@@ -61,7 +61,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(formData.email, formData.password);
-      router.push("/dashboard");
+      router.push("/");
     } catch (err) {
       if (err instanceof ApiClientError) {
         setSubmitError(err.message);
