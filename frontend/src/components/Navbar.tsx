@@ -86,10 +86,40 @@ function IconChevron({ open }: { open: boolean }) {
   );
 }
 
+function MenuItem({
+  href,
+  onClick,
+  icon,
+  children,
+  variant = "default",
+}: {
+  href: string;
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  variant?: "default" | "danger";
+}) {
+  const isDanger = variant === "danger";
+  return (
+    <Link
+      href={href}
+      role="menuitem"
+      onClick={onClick}
+      className={`flex items-center gap-3 h-[40px] px-3 rounded-lg font-heading font-normal text-[14px] transition-colors ${
+        isDanger
+          ? "text-red-600 hover:bg-red-50"
+          : "text-dark hover:bg-surface"
+      }`}
+    >
+      <span className={isDanger ? "text-red-600" : "text-muted"}>{icon}</span>
+      <span>{children}</span>
+    </Link>
+  );
+}
+
 export default function Navbar() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -111,6 +141,8 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
+  const closeMenu = () => setMenuOpen(false);
+
   const handleLogout = async () => {
     setMenuOpen(false);
     await logout();
@@ -119,7 +151,7 @@ export default function Navbar() {
 
   return (
     <nav className="w-full h-[76px] bg-surface shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)] sticky top-0 z-50">
-      <div className="max-w-[1280px] mx-auto h-full flex items-center justify-between px-[90px]">
+      <div className="max-w-[1280px] mx-auto h-full flex items-center justify-between px-6 md:px-[90px]">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-[40px] h-[40px] rounded-full bg-primary flex items-center justify-center">
             <svg
@@ -155,7 +187,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {isLoading ? (
             <div className="w-[180px] h-[36px]" aria-hidden="true" />
           ) : isAuthenticated && user ? (
@@ -170,7 +202,7 @@ export default function Navbar() {
                 <div className="w-[32px] h-[32px] rounded-full bg-primary flex items-center justify-center font-heading font-bold text-[14px] leading-[100%] text-white">
                   {getInitial(user.nama_lengkap)}
                 </div>
-                <span className="font-heading font-bold text-[14px] leading-[18px] text-dark max-w-[140px] truncate">
+                <span className="font-heading font-bold text-[14px] leading-[18px] text-dark max-w-[140px] truncate hidden sm:inline">
                   {user.nama_lengkap}
                 </span>
                 <span className="text-muted">
@@ -197,29 +229,66 @@ export default function Navbar() {
                     </div>
                   </div>
 
+                  <div className="md:hidden p-2 border-b border-border flex flex-col gap-1">
+                    <MenuItem
+                      href="/event"
+                      onClick={closeMenu}
+                      icon={
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect x="3" y="4" width="18" height="18" rx="2" />
+                          <path d="M16 2v4M8 2v4M3 10h18" />
+                        </svg>
+                      }
+                    >
+                      Event
+                    </MenuItem>
+                    <MenuItem
+                      href="/bantuan"
+                      onClick={closeMenu}
+                      icon={
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01" />
+                        </svg>
+                      }
+                    >
+                      Bantuan
+                    </MenuItem>
+                  </div>
+
                   <div className="p-2 flex flex-col gap-1">
-                    <Link
+                    <MenuItem
                       href="/dashboard"
-                      role="menuitem"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 h-[40px] px-3 rounded-lg font-heading font-normal text-[14px] text-dark hover:bg-surface transition-colors"
+                      onClick={closeMenu}
+                      icon={<IconUser />}
                     >
-                      <span className="text-muted">
-                        <IconUser />
-                      </span>
-                      <span>Profil Saya</span>
-                    </Link>
-                    <Link
+                      Profil Saya
+                    </MenuItem>
+                    <MenuItem
                       href="/dashboard"
-                      role="menuitem"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 h-[40px] px-3 rounded-lg font-heading font-normal text-[14px] text-dark hover:bg-surface transition-colors"
+                      onClick={closeMenu}
+                      icon={<IconTicket />}
                     >
-                      <span className="text-muted">
-                        <IconTicket />
-                      </span>
-                      <span>Tiket Saya</span>
-                    </Link>
+                      Tiket Saya
+                    </MenuItem>
                     <button
                       type="button"
                       role="menuitem"
@@ -252,78 +321,7 @@ export default function Navbar() {
             </>
           )}
         </div>
-
-        <button
-          className="md:hidden p-2"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M3 6h18M3 12h18M3 18h18"
-              stroke="#2C2C2C"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button>
       </div>
-
-      {mobileOpen && (
-        <div className="md:hidden bg-surface border-t border-border px-6 py-4 flex flex-col gap-4">
-          <Link
-            href="/event"
-            className="font-heading text-[14px] text-black"
-            onClick={() => setMobileOpen(false)}
-          >
-            Event
-          </Link>
-          <Link
-            href="/bantuan"
-            className="font-heading text-[14px] text-black"
-            onClick={() => setMobileOpen(false)}
-          >
-            Bantuan
-          </Link>
-          {isAuthenticated && user ? (
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 pt-2"
-              onClick={() => setMobileOpen(false)}
-            >
-              <div className="w-[36px] h-[36px] rounded-full bg-primary flex items-center justify-center font-heading font-bold text-[14px] leading-[100%] text-white">
-                {getInitial(user.nama_lengkap)}
-              </div>
-              <span className="font-heading font-bold text-[14px] text-dark truncate">
-                {user.nama_lengkap}
-              </span>
-            </Link>
-          ) : (
-            <div className="flex gap-3 pt-2">
-              <Link
-                href="/login"
-                className="flex-1 text-center px-3 py-2 bg-primary-dark text-white rounded-lg text-[14px]"
-                onClick={() => setMobileOpen(false)}
-              >
-                Masuk
-              </Link>
-              <Link
-                href="/register"
-                className="flex-1 text-center px-3 py-2 bg-accent text-[#F5F5F5] rounded-lg text-[14px]"
-                onClick={() => setMobileOpen(false)}
-              >
-                Daftar
-              </Link>
-            </div>
-          )}
-        </div>
-      )}
     </nav>
   );
 }
