@@ -26,60 +26,60 @@
 
 | Perintah | Deskripsi |
 |---|---|
-| `npm run dev` | Menjalankan frontend dev server di `http://localhost:3000` |
-| `npm run build` | Build frontend untuk production |
-| `npm run start` | Menjalankan frontend server production |
-| `npm run lint` | Menjalankan ESLint |
+| `cd frontend && npm run dev` | Menjalankan frontend dev server di `http://localhost:3000` |
+| `cd frontend && npm run build` | Build frontend untuk production |
+| `cd frontend && npm run start` | Menjalankan frontend server production |
+| `cd frontend && npm run lint` | Menjalankan ESLint |
 | `cd backend && go run ./cmd/server` | Menjalankan backend di `http://localhost:8080` |
 | `cd backend && go build -o /tmp/server ./cmd/server` | Build binary backend |
 
 **Catatan:** Belum ada script test. Jika perlu menambahkan test, diskusikan dengan user terlebih dahulu.
 
-## Struktur Direktori
+## Struktur Direktori (Monorepo)
 
 ```
-src/
-  app/
-    layout.tsx          # Root layout, font (Plus Jakarta Sans + Inter), metadata
-    page.tsx            # Halaman utama (landing page)
-    globals.css         # Global CSS + Tailwind theme tokens
-    login/page.tsx      # Halaman login (terhubung ke API)
-    register/page.tsx   # Halaman registrasi (terhubung ke API)
-    dashboard/page.tsx  # Halaman setelah login (protected)
-  components/
-    Navbar.tsx          # Navigasi (sticky, responsive, mobile hamburger)
-    HeroSection.tsx     # Hero banner dengan CTA
-    SearchSection.tsx   # Search bar + filter kategori
-    EventCards.tsx      # Grid kartu event populer
-    HowItWorks.tsx      # Section 3 langkah cara kerja
-    Subscription.tsx    # Form berlangganan newsletter
-    Footer.tsx          # Footer dengan link navigasi & sosial media
-  lib/
-    api.ts              # Fetch wrapper + error handling
-    auth.ts             # Token storage, request auth, types
-  hooks/
-    useAuth.ts          # Hook auth state (login/register/logout/me)
-
-backend/
-  cmd/server/main.go           # Entry point backend
-  internal/
-    config/                    # Loader .env
-    database/                  # Setup GORM + auto-migrate
-    models/                    # Struct User
-    repository/                # Query DB
-    services/                  # Business logic
-    handlers/                  # HTTP handler
-    middleware/                # Auth (JWT) + CORS + logger
-    utils/                     # JWT + bcrypt helpers
-    dto/                       # Request/Response shapes
-  data/                        # File SQLite (gitignored)
-  .env.example                 # Template env (jangan commit .env)
-  go.mod / go.sum
-  README.md
-
-public/
-  images/               # Gambar statis (event, hero, dll)
-  design/               # File desain
+Website-TicketTama/
+├── agents.md                 # Panduan untuk AI assistant
+├── README.md
+├── .gitignore                # Root-level ignores
+│
+├── frontend/                 # Next.js 16 (App Router)
+│   ├── src/
+│   │   ├── app/              # Routes
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── globals.css
+│   │   │   ├── login/page.tsx
+│   │   │   ├── register/page.tsx
+│   │   │   └── dashboard/page.tsx
+│   │   ├── components/       # Komponen UI
+│   │   ├── lib/              # api.ts, auth.ts
+│   │   └── hooks/            # useAuth.ts
+│   ├── public/               # Aset statis (images, design)
+│   ├── package.json
+│   ├── next.config.ts
+│   ├── tsconfig.json
+│   ├── eslint.config.mjs
+│   ├── postcss.config.mjs
+│   └── .gitignore
+│
+└── backend/                  # Go 1.22+ (Gin + GORM + SQLite)
+    ├── cmd/server/main.go
+    ├── internal/
+    │   ├── config/
+    │   ├── database/
+    │   ├── models/
+    │   ├── repository/
+    │   ├── services/
+    │   ├── handlers/
+    │   ├── middleware/
+    │   ├── utils/
+    │   └── dto/
+    ├── data/                 # File SQLite (gitignored)
+    ├── .env.example
+    ├── .gitignore
+    ├── go.mod / go.sum
+    └── README.md
 ```
 
 ## API Backend (Auth)
@@ -116,7 +116,7 @@ Variabel yang tersedia (lihat `backend/.env.example`):
 
 ## Environment Variables Frontend
 
-Tambahkan ke `.env.local` jika perlu override base URL API:
+Tambahkan ke `frontend/.env.local` jika perlu override base URL API:
 - `NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:8080/api`)
 
 ## Konvensi Kode
@@ -169,6 +169,7 @@ Gunakan `@/` yang mengarah ke `./src/`. Contoh: `import Navbar from "@/component
 
 ## Catatan Tambahan
 
-- Image dari Unsplash sudah dikonfigurasi di `next.config.ts` via `remotePatterns`.
-- Jangan menambahkan library baru tanpa memeriksa apakah sudah ada di `package.json`.
+- Image dari Unsplash sudah dikonfigurasi di `frontend/next.config.ts` via `remotePatterns`.
+- Jangan menambahkan library baru tanpa memeriksa apakah sudah ada di `frontend/package.json` (frontend) atau `backend/go.mod` (backend).
 - Prioritaskan penggunaan komponen dan utilitas yang sudah ada sebelum membuat yang baru.
+- Repo ini monorepo: `frontend/` untuk Next.js, `backend/` untuk Go service. Jalankan masing-masing dari foldernya sendiri.
