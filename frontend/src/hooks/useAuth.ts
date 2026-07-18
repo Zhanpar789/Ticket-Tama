@@ -21,20 +21,23 @@ type AuthState = {
 };
 
 function getInitialState(): AuthState {
-  const token = typeof window === "undefined" ? null : tokenStorage.get();
   return {
     user: null,
-    status: token ? "loading" : "unauthenticated",
-    token,
+    status: "loading",
+    token: null,
   };
 }
 
 export function useAuth() {
   const [state, setState] = useState<AuthState>(getInitialState);
 
-  const token = state.token;
   useEffect(() => {
-    if (!token) return;
+    const token = tokenStorage.get();
+    if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setState({ user: null, status: "unauthenticated", token: null });
+      return;
+    }
 
     let cancelled = false;
     fetchMe(token)
@@ -52,7 +55,7 @@ export function useAuth() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await loginRequest({ email, password });

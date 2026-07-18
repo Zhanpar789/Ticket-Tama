@@ -122,13 +122,14 @@ Tambahkan ke `frontend/.env.local` jika perlu override base URL API:
 ## Konvensi Kode
 
 ### Path Alias
-Gunakan `@/` yang mengarah ke `./src/`. Contoh: `import Navbar from "@/components/Navbar"`.
+Gunakan `@/` yang mengarah ke `./src/` (relative terhadap `frontend/tsconfig.json` → `frontend/src/`). Contoh: `import Navbar from "@/components/Navbar"`.
 
 ### Komponen
-- Semua komponen berada di `src/components/`.
+- Semua komponen berada di `frontend/src/components/`.
 - Komponen yang menggunakan state (`useState`, `useEffect`, dll) wajib menggunakan directive `"use client"`.
 - Komponen yang hanya render JSX statis tidak perlu `"use client"` (server component).
 - Penamaan komponen: **PascalCase**, default export.
+- **Auth-aware components**: komponen yang butuh data user (mis. Navbar) harus pakai `useAuth()` dari `@/hooks/useAuth`, bukan baca `localStorage` langsung. Initial state `loading` di hook sudah di-handle untuk anti hydration mismatch.
 
 ### Styling
 - Gunakan **Tailwind utility classes** secara langsung di JSX.
@@ -145,7 +146,7 @@ Gunakan `@/` yang mengarah ke `./src/`. Contoh: `import Navbar from "@/component
 
 ### Layout
 - Max-width container: `max-w-[1100px]` atau `max-w-[1280px]`.
-- Horizontal padding konsisten: `px-[90px]`.
+- Horizontal padding: `px-6 md:px-[90px]` (konsisten dengan referensi layout, responsif di mobile).
 - Gunakan `mx-auto` untuk centering.
 
 ### Bahasa UI
@@ -154,14 +155,24 @@ Gunakan `@/` yang mengarah ke `./src/`. Contoh: `import Navbar from "@/component
 ## Status Proyek
 
 - **Backend Go sudah terpasang** dengan auth lengkap (register, login, logout, refresh, me).
-- Frontend sudah terhubung ke backend melalui `src/lib/api.ts` & `src/hooks/useAuth.ts`.
+- Frontend sudah terhubung ke backend melalui `frontend/src/lib/api.ts` & `frontend/src/hooks/useAuth.ts`.
 - Token access disimpan di `localStorage`, refresh token di httpOnly cookie.
-- Setelah login/register, user di-redirect ke `/dashboard`.
+- Setelah login/register, user di-redirect ke `/` (landing), bukan `/dashboard`.
+- **`/dashboard`** adalah halaman profil sederhana (cek token, fetch `/me`, tombol logout legacy) — bukan tujuan post-login.
+- **Navbar responsif auth-aware** (`frontend/src/components/Navbar.tsx`):
+  - Loading: spacer kosong (anti layout shift, anti hydration mismatch)
+  - Authenticated: avatar lingkaran + nama (truncate, hidden di mobile) + chevron, click → dropdown overlay
+  - Unauthenticated: tombol Masuk + Daftar
+  - Mobile logged-in: 1 icon profile di kanan (tanpa hamburger), dropdown memuat Event, Bantuan + Profil Saya, Tiket Saya, Keluar
+  - Desktop logged-in: Event & Bantuan di center navbar (tidak di dropdown); dropdown hanya Profil Saya, Tiket Saya, Keluar
+  - Logout dari dropdown menampilkan fake loading overlay (~1.5s) dengan spinner + logo TicketTama sebelum benar-benar logout dan redirect ke `/`
+- **useAuth pattern** (`frontend/src/hooks/useAuth.ts`): initial state selalu `loading` (bukan baca `localStorage` di initializer) supaya konsisten antara SSR & client — menghindari hydration mismatch. Pembacaan token & fetch `/me` terjadi di `useEffect` setelah mount.
+- **Netlify deployment**: `netlify.toml` di root dengan `base = "frontend"` agar build command jalan di dalam folder frontend (tanpa ini, Netlify gagal karena `package.json` ada di subfolder).
 - Data event masih **hardcoded** di `EventCards.tsx`.
 - Gambar event di `EventCards.tsx` belum diimplementasikan (masih placeholder `bg-[#D9D9D9]`).
 - Tombol Google login/register masih disabled (belum diimplementasikan).
 - Halaman yang sudah ada: `/` (landing), `/login`, `/register`, `/dashboard`.
-- Halaman yang direferensikan tapi belum dibuat: `/event`, `/bantuan`, `/pusat-bantuan`.
+- Halaman yang direferensikan tapi belum dibuat: `/event`, `/bantuan`, `/pusat-bantuan`, `/profile` (biodata + upload foto).
 
 ## Konvensi Git
 
@@ -173,3 +184,5 @@ Gunakan `@/` yang mengarah ke `./src/`. Contoh: `import Navbar from "@/component
 - Jangan menambahkan library baru tanpa memeriksa apakah sudah ada di `frontend/package.json` (frontend) atau `backend/go.mod` (backend).
 - Prioritaskan penggunaan komponen dan utilitas yang sudah ada sebelum membuat yang baru.
 - Repo ini monorepo: `frontend/` untuk Next.js, `backend/` untuk Go service. Jalankan masing-masing dari foldernya sendiri.
+- **Mobile breakpoint**: `md` (768px). Default mobile = `< 768px`, desktop = `>= 768px`.
+- **Hydration-sensitive code**: kalau membuat client component yang baca storage (localStorage/sessionStorage/cookies) atau pakai `Date.now()`/random, **SELALU** render state yang sama di server dan client pada first render. Set initial state konservatif (loading/empty), baca storage di `useEffect`.
