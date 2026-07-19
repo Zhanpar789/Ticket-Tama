@@ -172,3 +172,36 @@ func (h *AuthHandler) Me(c *gin.Context) {
 		},
 	})
 }
+
+func (h *AuthHandler) ChangePassword(c *gin.Context) {
+	uid, ok := c.Get(middleware.UserIDKey)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{Error: "Unauthorized"})
+		return
+	}
+
+	var req dto.ChangePasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	err := h.auth.ChangePassword(uid.(uint), req.CurrentPassword, req.NewPassword)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrUserNotFound):
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{Error: "User tidak ditemukan"})
+		case errors.Is(err, services.ErrInvalidCredentials):
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Kata sandi lama salah"})
+		case errors.Is(err, services.ErrSamePassword):
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Kata sandi baru tidak boleh sama dengan kata sandi lama"})
+		case errors.Is(err, services.ErrWeakPassword):
+			c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Kata sandi baru tidak memenuhi syarat kekuatan"})
+		default:
+			c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: "Gagal mengubah kata sandi"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.MessageResponse{Message: "Kata sandi berhasil diubah"})
+}

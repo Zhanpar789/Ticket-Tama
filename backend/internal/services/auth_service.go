@@ -16,6 +16,9 @@ import (
 var (
 	ErrEmailAlreadyExists = errors.New("email already registered")
 	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrUserNotFound       = errors.New("user not found")
+	ErrWeakPassword       = errors.New("password does not meet strength requirements")
+	ErrSamePassword       = errors.New("new password must be different from current password")
 )
 
 type AuthService struct {
@@ -102,4 +105,33 @@ func (s *AuthService) IssueTokens(user *models.User) (*IssuedTokens, error) {
 
 func (s *AuthService) GetUserByID(id uint) (*models.User, error) {
 	return s.users.FindByID(id)
+}
+
+func (s *AuthService) ChangePassword(userID uint, currentPassword, newPassword string) error {
+	user, err := s.users.FindByID(userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) || errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrUserNotFound
+		}
+		return err
+	}
+
+	if !utils.ComparePassword(user.Password, currentPassword) {
+		return ErrInvalidCredentials
+	}
+
+	if utils.ComparePassword(user.Password, newPassword) {
+		return ErrSamePassword
+	}
+
+	if err := utils.ValidatePasswordStrength(newPassword); err != nil {
+		return ErrWeakPassword
+	}
+
+	hashed, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	return s.users.UpdatePassword(user.ID, hashed)
 }

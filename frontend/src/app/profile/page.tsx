@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import Avatar from "@/components/Avatar";
+import ChangePasswordModal from "@/components/ChangePasswordModal";
 import Navbar from "@/components/Navbar";
 import PhoneInput from "@/components/PhoneInput";
 import ProfileSidebar from "@/components/ProfileSidebar";
@@ -265,6 +266,8 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -423,6 +426,16 @@ export default function ProfilePage() {
         onClose={() => setSuccess(false)}
         message="Data berhasil disimpan"
       />
+      <Toast
+        show={passwordSuccess}
+        onClose={() => setPasswordSuccess(false)}
+        message="Berhasil mengubah kata sandi"
+      />
+      <ChangePasswordModal
+        open={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+        onSuccess={() => setPasswordSuccess(true)}
+      />
       <main className="flex-1 w-full bg-[#F1F1F1]">
         <div className="max-w-[1280px] mx-auto px-6 md:px-[90px] py-6 md:py-8">
           <nav
@@ -504,9 +517,8 @@ export default function ProfilePage() {
                   <div className="sm:ml-auto flex items-center gap-2 flex-wrap">
                     <button
                       type="button"
-                      disabled
-                      title="Segera hadir"
-                      className="h-[40px] px-4 rounded-lg border border-border bg-white font-body font-bold text-[13px] leading-[18px] text-dark opacity-60 cursor-not-allowed"
+                      onClick={() => setIsChangePasswordOpen(true)}
+                      className="h-[40px] px-4 rounded-lg border border-border bg-white font-body font-bold text-[13px] leading-[18px] text-dark hover:bg-surface transition-colors"
                     >
                       Ubah Kata Sandi
                     </button>

@@ -12,6 +12,7 @@ import {
 import { ApiClientError } from "@/lib/api";
 import {
   AuthUser,
+  changePasswordRequest,
   fetchMe,
   loginRequest,
   logoutRequest,
@@ -39,6 +40,7 @@ type AuthContextValue = {
     password: string
   ) => Promise<AuthUser>;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -114,6 +116,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      if (!state.token) throw new Error("Tidak terautentikasi");
+      await changePasswordRequest(
+        { current_password: currentPassword, new_password: newPassword },
+        state.token
+      );
+    },
+    [state.token]
+  );
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user: state.user,
@@ -123,8 +136,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login,
       register,
       logout,
+      changePassword,
     }),
-    [state.user, state.status, login, register, logout]
+    [state.user, state.status, login, register, logout, changePassword]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -50,6 +50,7 @@ func main() {
 			auth.POST("/refresh", authHandler.Refresh)
 			auth.POST("/logout", authHandler.Logout)
 			auth.GET("/me", middleware.AuthRequired(jwtMgr), authHandler.Me)
+			auth.POST("/change-password", middleware.AuthRequired(jwtMgr), authHandler.ChangePassword)
 		}
 	}
 
