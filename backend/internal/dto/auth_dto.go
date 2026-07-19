@@ -22,6 +22,15 @@ type AuthResponse struct {
 	AccessToken string       `json:"access_token"`
 }
 
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"current_password" binding:"required,min=8,max=72"`
+	NewPassword     string `json:"new_password" binding:"required,min=8,max=72"`
+}
+
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+
 type ErrorResponse struct {
 	Error string `json:"error"`
 }

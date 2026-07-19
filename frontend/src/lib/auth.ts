@@ -70,3 +70,19 @@ export async function fetchMe(accessToken: string): Promise<AuthUser> {
   });
   return data.user;
 }
+
+export type ChangePasswordPayload = {
+  current_password: string;
+  new_password: string;
+};
+
+export async function changePasswordRequest(
+  payload: ChangePasswordPayload,
+  accessToken: string
+): Promise<{ message: string }> {
+  return apiRequest<{ message: string }>("/auth/change-password", {
+    method: "POST",
+    body: payload,
+    accessToken,
+  });
+}
