@@ -9,6 +9,7 @@ import {
   logoutRequest,
   registerRequest,
   tokenStorage,
+  changePasswordRequest,
 } from "@/lib/auth";
 import { ApiClientError } from "@/lib/api";
 
@@ -93,6 +94,17 @@ export function useAuth() {
     }
   }, []);
 
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      if (!state.token) throw new Error("Tidak terautentikasi");
+      await changePasswordRequest(
+        { current_password: currentPassword, new_password: newPassword },
+        state.token
+      );
+    },
+    [state.token]
+  );
+
   return {
     user: state.user,
     status: state.status,
@@ -101,5 +113,6 @@ export function useAuth() {
     login,
     register,
     logout,
+    changePassword,
   };
 }

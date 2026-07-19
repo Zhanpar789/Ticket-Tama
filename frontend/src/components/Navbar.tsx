@@ -4,14 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import Avatar from "@/components/Avatar";
+import { useProfile } from "@/contexts/ProfileContext";
 import { useAuth } from "@/hooks/useAuth";
-
-function getInitial(name: string | undefined | null): string {
-  if (!name) return "?";
-  const trimmed = name.trim();
-  if (!trimmed) return "?";
-  return trimmed.charAt(0).toUpperCase();
-}
 
 function IconUser() {
   return (
@@ -160,9 +155,13 @@ function MenuItem({
 export default function Navbar() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { profile } = useProfile();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const displayName = profile.nama_lengkap || user?.nama_lengkap || "";
+  const displayEmail = profile.email || user?.email || "";
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -234,11 +233,9 @@ export default function Navbar() {
                   disabled={isLoggingOut}
                   className="flex items-center gap-2 h-[36px] pl-1 pr-2 rounded-full hover:bg-border/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <div className="w-[32px] h-[32px] rounded-full bg-primary flex items-center justify-center font-heading font-bold text-[14px] leading-[100%] text-white">
-                    {getInitial(user.nama_lengkap)}
-                  </div>
+                  <Avatar src={profile.foto} name={displayName} size={32} />
                   <span className="font-heading font-bold text-[14px] leading-[18px] text-dark max-w-[140px] truncate hidden sm:inline">
-                    {user.nama_lengkap}
+                    {displayName}
                   </span>
                   <span className="text-muted">
                     <IconChevron open={menuOpen} />
@@ -251,15 +248,18 @@ export default function Navbar() {
                     className="absolute right-0 top-[calc(100%+8px)] w-[260px] bg-white rounded-2xl border border-border shadow-[0px_8px_24px_rgba(12,12,13,0.12)] overflow-hidden z-50"
                   >
                     <div className="p-4 flex items-center gap-3 border-b border-border">
-                      <div className="w-[44px] h-[44px] rounded-full bg-primary flex items-center justify-center font-heading font-bold text-[16px] leading-[100%] text-white flex-shrink-0">
-                        {getInitial(user.nama_lengkap)}
-                      </div>
+                      <Avatar
+                        src={profile.foto}
+                        name={displayName}
+                        size={44}
+                        textClass="text-[16px]"
+                      />
                       <div className="min-w-0 flex-1">
                         <p className="font-heading font-bold text-[14px] leading-[18px] text-dark truncate">
-                          {user.nama_lengkap}
+                          {displayName}
                         </p>
                         <p className="font-body text-[12px] leading-[16px] text-muted truncate">
-                          {user.email}
+                          {displayEmail}
                         </p>
                       </div>
                     </div>
@@ -311,7 +311,7 @@ export default function Navbar() {
 
                     <div className="p-2 flex flex-col gap-1">
                       <MenuItem
-                        href="/dashboard"
+                        href="/profile"
                         onClick={closeMenu}
                         icon={<IconUser />}
                       >
