@@ -122,7 +122,7 @@ export default function EventCards() {
         </h2>
         <Link
           href="/event"
-          className="flex items-center gap-2 h-[40px] px-5 bg-primary border border-primary rounded-lg shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)] hover:bg-primary-dark transition-colors"
+          className="flex items-center gap-2 h-[40px] px-5 bg-primary border border-primary rounded-lg text-white shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)] hover:bg-primary-dark transition-colors"
         >
           <span className="font-body font-normal text-[14px] leading-[140%] text-white">
             Lihat semua
