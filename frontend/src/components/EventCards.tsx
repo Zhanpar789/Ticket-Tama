@@ -68,7 +68,7 @@ function EventCard({ event }: { event: Event }) {
   return (
     <Link
       href={`/event/${event.id}`}
-      className="block w-full rounded-lg overflow-hidden bg-white border border-black/10 shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group"
+      className="flex h-full w-full flex-col overflow-hidden rounded-lg border border-black/10 bg-white shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)] transition-all duration-200 group hover:-translate-y-0.5 hover:shadow-lg"
     >
       <div className="relative w-full aspect-[16/10] bg-[#D9D9D9] overflow-hidden">
         <div
@@ -83,22 +83,22 @@ function EventCard({ event }: { event: Event }) {
         </div>
       </div>
 
-      <div className="p-4 bg-white">
-        <h3 className="font-heading font-bold text-[16px] leading-[20px] text-black mb-2 line-clamp-2">
+      <div className="flex flex-1 flex-col bg-white p-4">
+        <h3 className="min-h-[40px] mb-2 font-heading font-bold text-[16px] leading-[20px] text-black line-clamp-2">
           {event.title}
         </h3>
 
-        <div className="flex items-center gap-2 mb-1 text-muted">
+        <div className="flex min-h-[34px] items-center gap-2 mb-1 text-muted">
           <IconCalendar />
           <span className="font-body text-[14px] leading-[17px]">{event.date}</span>
         </div>
 
-        <div className="flex items-center gap-2 mb-3 text-muted">
+        <div className="flex min-h-[34px] items-center gap-2 mb-3 text-muted">
           <IconPin />
           <span className="font-body text-[14px] leading-[17px]">{event.location}</span>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-auto">
           <span className="font-body text-[16px] leading-[19px] text-body font-bold">
             {event.priceLabel}
           </span>
