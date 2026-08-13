@@ -282,7 +282,7 @@ export const EVENTS: Event[] = [
   },
   {
     id: "fun-run-cowo-cowo",
-    title: "Fun Run COWO COWO 5K",
+    title: "Fun Run COWO CEWE 5K",
     category: "Olahraga",
     date: "12 April 2026",
     dateISO: "2026-04-12",
