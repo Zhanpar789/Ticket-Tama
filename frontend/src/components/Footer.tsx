@@ -62,7 +62,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               <li>
                 <Link
-                  href="/pusat-bantuan"
+                  href="/bantuan"
                   className="font-heading text-[14px] leading-[18px] text-muted hover:text-primary transition-colors"
                 >
                   Pusat Bantuan
