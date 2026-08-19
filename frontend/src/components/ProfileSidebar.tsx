@@ -83,7 +83,7 @@ export default function ProfileSidebar({ active }: Props) {
   };
 
   return (
-    <aside className="w-full md:w-[260px] md:flex-shrink-0">
+    <aside className="w-full md:w-[260px] lg:w-[280px] md:flex-shrink-0">
       <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible">
         <Link
           href="/profile"
@@ -100,7 +100,7 @@ export default function ProfileSidebar({ active }: Props) {
         </Link>
 
         <Link
-          href="/dashboard"
+          href="/tickets"
           className={`flex items-center gap-3 h-[48px] px-4 rounded-xl font-heading font-bold text-[14px] leading-[18px] transition-colors whitespace-nowrap ${
             active === "tiket"
               ? "bg-[#DBE7FB] text-primary"

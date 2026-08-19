@@ -318,7 +318,7 @@ export default function Navbar() {
                         Profil Saya
                       </MenuItem>
                       <MenuItem
-                        href="/dashboard"
+                        href="/tickets"
                         onClick={closeMenu}
                         icon={<IconTicket />}
                       >
