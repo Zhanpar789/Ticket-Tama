@@ -18,6 +18,8 @@ Platform tiket event digital berbahasa Indonesia. Pengunjung dapat menelusuri ev
 - Katalog event dan halaman detail event.
 - Registrasi, login, logout, pembaruan access token, serta informasi akun aktif.
 - Halaman profil dengan foto, data kontak, pilihan kode negara, dan alamat.
+- Halaman Bantuan (FE Only So far)
+- Halaman Tiket Saya (Fe Onlt So far)
 - Ubah kata sandi dengan validasi kekuatan kata sandi.
 - Navbar responsif yang menyesuaikan status autentikasi.
 
