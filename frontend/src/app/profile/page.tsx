@@ -409,10 +409,8 @@ export default function ProfilePage() {
     return (
       <>
         <Navbar />
-        <main className="flex-1 w-full bg-[#F1F1F1]">
-          <div className="max-w-[1280px] mx-auto px-6 md:px-[90px] py-10 flex items-center justify-center">
-            <p className="font-body text-muted text-[16px]">Memuat...</p>
-          </div>
+        <main className="flex min-h-[calc(100vh-76px)] items-center justify-center bg-[#F5F6F8]">
+          <p className="font-body text-[16px] text-muted">Memuat...</p>
         </main>
       </>
     );
@@ -436,11 +434,11 @@ export default function ProfilePage() {
         onClose={() => setIsChangePasswordOpen(false)}
         onSuccess={() => setPasswordSuccess(true)}
       />
-      <main className="flex-1 w-full bg-[#F1F1F1]">
-        <div className="max-w-[1280px] mx-auto px-6 md:px-[90px] py-6 md:py-8">
+      <main className="min-h-[calc(100vh-76px)] bg-[#F5F6F8]">
+        <div className="mx-auto max-w-[1500px] px-6 py-8 md:px-12 lg:px-16 lg:py-10">
           <nav
             aria-label="Breadcrumb"
-            className="font-body text-[14px] leading-[18px] text-muted mb-6"
+            className="mb-10 font-body text-[14px] leading-[18px] text-muted"
           >
             <Link href="/" className="hover:text-primary transition-colors">
               Profil
@@ -449,15 +447,15 @@ export default function ProfilePage() {
             <span className="text-primary font-bold">Profil Saya</span>
           </nav>
 
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col gap-10 lg:flex-row">
             <ProfileSidebar active="profil" />
 
             <section className="flex-1 min-w-0">
-              <header className="mb-6">
-                <h1 className="font-heading font-bold text-[28px] md:text-[36px] leading-[40px] md:leading-[45px] text-dark">
+              <header className="mb-8">
+                <h1 className="font-heading text-[34px] font-bold leading-[43px] text-black md:text-[40px] md:leading-[50px]">
                   Pengaturan Akun
                 </h1>
-                <p className="font-body text-[15px] leading-[20px] text-muted mt-2">
+                <p className="mt-2 font-body text-[18px] leading-[24px] text-body">
                   Kelola informasi pribadi dan preferensi Anda.
                 </p>
               </header>
