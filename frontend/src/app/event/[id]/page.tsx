@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import { useState } from "react";
 
@@ -238,6 +237,7 @@ export default function EventDetailPage() {
   const event = getEventById(id);
 
   const [quantity, setQuantity] = useState(0);
+  const [quantityError, setQuantityError] = useState(false);
   const [openSection, setOpenSection] = useState<"age" | "refund" | null>("age");
   const [toast, setToast] = useState<{ show: boolean; message: string }>({
     show: false,
@@ -250,7 +250,7 @@ export default function EventDetailPage() {
 
   const handleBuy = () => {
     if (quantity === 0) {
-      setToast({ show: true, message: "Pilih jumlah tiket terlebih dahulu" });
+      setQuantityError(true);
       return;
     }
     setToast({
@@ -397,9 +397,10 @@ export default function EventDetailPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={() =>
-                        setQuantity((q) => Math.min(event.maxTickets, q + 1))
-                      }
+                      onClick={() => {
+                        setQuantity((q) => Math.min(event.maxTickets, q + 1));
+                        setQuantityError(false);
+                      }}
                       disabled={quantity >= event.maxTickets}
                       aria-label="Tambah jumlah"
                       className="w-[28px] h-[28px] flex items-center justify-center rounded-md border border-border text-dark hover:bg-surface disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -408,6 +409,15 @@ export default function EventDetailPage() {
                     </button>
                   </div>
                 </div>
+
+                {quantityError && (
+                  <p
+                    role="alert"
+                    className="mt-2 font-body text-[13px] leading-[18px] text-red-600"
+                  >
+                    Pilih jumlah tiket terlebih dahulu.
+                  </p>
+                )}
 
                 <button
                   type="button"
