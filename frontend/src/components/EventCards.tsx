@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { EVENTS, Event } from "@/lib/events";
+import { Event } from "@/lib/events";
 
 function IconCalendar() {
   return (
@@ -64,6 +64,28 @@ function IconArrow() {
   );
 }
 
+function IconSearch() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="text-muted"
+    >
+      <path
+        d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function EventCard({ event }: { event: Event }) {
   return (
     <Link
@@ -111,31 +133,88 @@ function EventCard({ event }: { event: Event }) {
   );
 }
 
-export default function EventCards() {
-  const popular = EVENTS.slice(0, 4);
+type EventCardsProps = {
+  events: Event[];
+  title?: string;
+  subtitle?: string;
+  showViewAll?: boolean;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  onReset?: () => void;
+  resetLabel?: string;
+};
+
+export default function EventCards({
+  events,
+  title = "Event Populer",
+  subtitle,
+  showViewAll = true,
+  emptyTitle = "Event tidak ditemukan",
+  emptyDescription = "Coba ubah kata kunci atau pilih kategori lain.",
+  onReset,
+  resetLabel = "Reset Pencarian",
+}: EventCardsProps) {
+  const isEmpty = events.length === 0;
 
   return (
     <section className="max-w-[1100px] mx-auto px-6 md:px-[90px] mt-[60px]">
-      <div className="flex items-center justify-between mb-[40px]">
-        <h2 className="font-heading font-bold text-[28px] leading-[35px] text-black">
-          Event Populer
-        </h2>
-        <Link
-          href="/event"
-          className="flex items-center gap-2 h-[40px] px-5 bg-primary border border-primary rounded-lg text-white shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)] hover:bg-primary-dark transition-colors"
-        >
-          <span className="font-body font-normal text-[14px] leading-[140%] text-white">
-            Lihat semua
-          </span>
-          <IconArrow />
-        </Link>
+      <div className="flex items-start justify-between gap-4 mb-[40px]">
+        <div className="flex flex-col gap-1">
+          <h2 className="font-heading font-bold text-[28px] leading-[35px] text-black">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="font-body text-[14px] leading-[20px] text-muted">{subtitle}</p>
+          )}
+        </div>
+        {showViewAll && !isEmpty && (
+          <Link
+            href="/event"
+            className="flex items-center gap-2 h-[40px] px-5 bg-primary border border-primary rounded-lg text-white shadow-[0px_1px_4px_rgba(12,12,13,0.1),0px_1px_4px_rgba(12,12,13,0.05)] hover:bg-primary-dark transition-colors flex-shrink-0"
+          >
+            <span className="font-body font-normal text-[14px] leading-[140%] text-white">
+              Lihat semua
+            </span>
+            <IconArrow />
+          </Link>
+        )}
+        {onReset && (
+          <button
+            type="button"
+            onClick={onReset}
+            className="flex items-center gap-2 h-[40px] px-5 bg-white border border-border rounded-lg text-body font-body text-[14px] leading-[140%] hover:border-primary hover:text-primary transition-colors flex-shrink-0"
+          >
+            {resetLabel}
+          </button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {popular.map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
-      </div>
+      {isEmpty ? (
+        <div className="flex flex-col items-center justify-center text-center py-16 px-6 border border-dashed border-border rounded-2xl bg-surface">
+          <IconSearch />
+          <h3 className="mt-4 font-heading font-bold text-[18px] leading-[24px] text-body">
+            {emptyTitle}
+          </h3>
+          <p className="mt-2 font-body text-[14px] leading-[20px] text-muted max-w-md">
+            {emptyDescription}
+          </p>
+          {onReset && (
+            <button
+              type="button"
+              onClick={onReset}
+              className="mt-6 flex items-center gap-2 h-[44px] px-6 bg-primary border border-primary rounded-lg text-white font-body text-[14px] leading-[140%] hover:bg-primary-dark transition-colors"
+            >
+              {resetLabel}
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {events.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
